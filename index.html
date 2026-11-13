@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F2F2F1">
 <title>Fuu App</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +19,7 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#17161B;--page-ink:#ECEBF1;--page-muted:#A3A1AD;--page-line:#33313A;--page-panel:#211F26;color-scheme:dark}}
 :root[data-theme="dark"]{--page:#17161B;--page-ink:#ECEBF1;--page-muted:#A3A1AD;--page-line:#33313A;--page-panel:#211F26;color-scheme:dark}
-html,body{height:100%}
+html,body{height:100%;margin:0}
 body{background:var(--page);color:var(--page-ink);font-family:var(--sans);font-size:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap{display:grid;grid-template-columns:260px minmax(0,1fr);gap:40px;max-width:980px;margin:0 auto;padding-block:28px;box-sizing:border-box}
 .notes{display:flex;flex-direction:column;gap:14px;align-self:start;position:sticky;top:28px}
@@ -498,7 +503,7 @@ const readySVG=(e,c,opts)=>moodieSVG({emo:e,mode:"ready",sub:null,_c:c},opts).re
 /* ---------- shell ---------- */
 const app=document.getElementById("app");
 let stack=[];let tab="today";
-function statusBar(){return '<div class="fake-status" aria-hidden="true"><span>9:41</span><span>●●● ▮</span></div><div class="safe-top"></div>';}
+function statusBar(){return '<div class="fake-status" aria-hidden="true"><span>9:41</span><svg width="78" height="13" viewBox="0 0 78 13" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/><path d="M34.5 3.2a9 9 0 0 1 6.2 2.5l1.2-1.2a10.7 10.7 0 0 0-14.8 0l1.2 1.2a9 9 0 0 1 6.2-2.5zm0 3.4a5.6 5.6 0 0 1 3.8 1.5l1.2-1.2a7.3 7.3 0 0 0-10 0l1.2 1.2a5.6 5.6 0 0 1 3.8-1.5zm0 3.4 1.9 1.9-1.9 1.9-1.9-1.9z"/><rect x="51.5" y="0.5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="53.5" y="2.5" width="19" height="8" rx="2"/><rect x="75.5" y="4.5" width="1.5" height="4" rx=".7" fill-opacity=".4"/></svg></div><div class="safe-top"></div>';}
 const TABS=["today","moodies","me"];let tabFrom=null;
 // the pill starts on the tab we came from; mount() slides it to the current one
 function tabbar(){
