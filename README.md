@@ -9,7 +9,7 @@ Fuu 是一個情緒表達 App，給累到沒力氣照顧自己的上班族。
 
 ## 線上試玩
 
-👉 https://tracyyunn.github.io/fuu-app-1113/
+👉 https://tracyyunn.github.io/fuu.design/
 
 用手機打開最接近真實體驗；用電腦打開會出現一支手機框，左邊是說明。
 
