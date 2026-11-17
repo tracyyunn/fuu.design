@@ -450,6 +450,11 @@ const UNLOCK_AT=8;
 const PAD=14; // drawing room around the art (art units)
 const BLEED=7; // how far strokes may show past the art once it's saved
 const bleedBox=e=>{const [x,y,w,h]=ARTS[e].vb.split(" ").map(Number);return [x-BLEED,y-BLEED,w+BLEED*2,h+BLEED*2];};
+// the art's box grown to hold every stroke, so a saved doodle is never cut off
+function fitBox(m,base){let [x0,y0,w,h]=base,x1=x0+w,y1=y0+h;
+  if(m.mode!=="ready"&&m.strokes)for(const s of m.strokes){const n=(s.d.match(/-?\d*\.?\d+/g)||[]).map(Number),r=s.w/2;
+    for(let i=0;i+1<n.length;i+=2){x0=Math.min(x0,n[i]-r);x1=Math.max(x1,n[i]+r);y0=Math.min(y0,n[i+1]-r);y1=Math.max(y1,n[i+1]+r);}}
+  return [x0,y0,x1-x0,y1-y0];}
 
 /* ---------- storage (this browser only) ---------- */
 const KEY="fuu-app-v1";
@@ -493,9 +498,9 @@ function moodieSVG(m,opts={}){
   let body="";
   if(m.mode==="ready"||!m.strokes||!m.strokes.length)body='<path d="'+a.body+'" fill="'+c+'"/>';
   else body=m.strokes.map(s=>'<path d="'+s.d+'" fill="none" stroke="'+c+'" stroke-width="'+s.w+'" stroke-linecap="round" stroke-linejoin="round"/>').join("");
-  const box=opts.tight?ARTS[m.emo].vb:v.join(" ");
-  // strokes may bleed past the art into the drawing room, but never further
-  const cid="mc"+(++clipN),cb=bleedBox(m.emo);
+  const bx=fitBox(m,opts.tight?ARTS[m.emo].vb.split(" ").map(Number):v),box=bx.join(" ");
+  // the box already holds every stroke, so the clip only guards against stray marks
+  const cid="mc"+(++clipN),cb=bx;
   return '<svg viewBox="'+box+'" overflow="visible" style="overflow:visible;pointer-events:none" role="img" aria-label="'+(m.sub||m.emo)+' Moodie" xmlns="http://www.w3.org/2000/svg"><clipPath id="'+cid+'"><rect x="'+cb[0]+'" y="'+cb[1]+'" width="'+cb[2]+'" height="'+cb[3]+'"/></clipPath><g clip-path="url(#'+cid+')">'+body+'</g><g fill="none">'+a.lines+'</g></svg>';
 }
 const readySVG=(e,c,opts)=>moodieSVG({emo:e,mode:"ready",sub:null,_c:c},opts).replace(EMO[e].base,c||EMO[e].base);
@@ -641,11 +646,11 @@ function liveMoodie(box,m){
   const [k,tx,ty]=LIVE_FIT[m.emo],c=colorOf(m);
   const body=m.mode==="ready"||!m.strokes||!m.strokes.length?'<path d="'+ARTS[m.emo].body+'" fill="'+c+'"/>'
     :m.strokes.map(s=>'<path d="'+s.d+'" fill="none" stroke="'+c+'" stroke-width="'+s.w+'" stroke-linecap="round" stroke-linejoin="round"/>').join("");
-  const [vx,vy,vw,vh]=ARTS[m.emo].vb.split(" ").map(Number);
+  const [vx,vy,vw,vh]=fitBox(m,ARTS[m.emo].vb.split(" ").map(Number));
   const holder=document.createElement("div");holder.className="live";holder.style.width=200*vw/vh+"px";box.replaceChildren(holder);
   const an=lottie.loadAnimation({container:holder,renderer:"svg",loop:true,autoplay:!matchMedia("(prefers-reduced-motion: reduce)").matches,animationData:JSON.parse(JSON.stringify(LOTTIE[m.emo]))});
   an.addEventListener("DOMLoaded",()=>{const svg=holder.querySelector("svg");svg.style.overflow="visible";svg.setAttribute("viewBox",[k*vx+tx,k*vy+ty,k*vw,k*vh].join(" "));
-    const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("transform","translate("+tx+","+ty+") scale("+k+")");const v=bleedBox(m.emo),cid="mc"+(++clipN);g.innerHTML='<clipPath id="'+cid+'"><rect x="'+v[0]+'" y="'+v[1]+'" width="'+v[2]+'" height="'+v[3]+'"/></clipPath><g clip-path="url(#'+cid+')">'+body+'</g>';svg.insertBefore(g,svg.querySelector(":scope > g"));});
+    const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("transform","translate("+tx+","+ty+") scale("+k+")");const v=[vx,vy,vw,vh],cid="mc"+(++clipN);g.innerHTML='<clipPath id="'+cid+'"><rect x="'+v[0]+'" y="'+v[1]+'" width="'+v[2]+'" height="'+v[3]+'"/></clipPath><g clip-path="url(#'+cid+')">'+body+'</g>';svg.insertBefore(g,svg.querySelector(":scope > g"));});
   lottieAnims.push(an);
 }
 
